@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+
+  web:
+    build: ./web/.
+    env_file: .env
+    volumes:
+      - ./web:/app
+      - ${SHARED_DIR}:/shared/
+    command: ["uwsgi", "--ini", "uwsgi.ini"]
+    depends_on:
+      - redis
+    stop_signal: SIGINT
+    restart: unless-stopped
+
+  bot:
+    build: ./web/.
+    env_file: .env
+    volumes:
+      - ./web:/app
+    command: ["python", "manage.py", "run_polling"]
+    stop_signal: SIGINT  
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  redis:
+    image: redis/redis-stack-server:latest
+    volumes:
+      - redis_data:/data/
+    sysctls:
+      net.core.somaxconn: '511'
+    restart: unless-stopped
+
+
+volumes:
+  redis_data: {}

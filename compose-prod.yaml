@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+
+  celery:
+    build: ./web/.
+    env_file: .env
+    volumes:
+      - ./web:/app
+      - ${SHARED_DIR}:/shared/
+    command: celery -A noicrm worker -l info
+    depends_on:
+      - redis
+  celery-beat:
+    build: ./web/.
+    env_file: .env
+    volumes:
+      - ./web:/app
+      - ${SHARED_DIR}:/shared/
+    command: celery -A noicrm beat -l info
+    depends_on:
+      - redis

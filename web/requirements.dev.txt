@@ -1,0 +1,4 @@
+django-debug-toolbar
+django-livereload-server
+ipython
+debugpy

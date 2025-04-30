@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+
+  web:
+    build:
+        context: ./web/
+        dockerfile: Dockerfile
+        args:
+            BUILD_MY_IOT_ENV: dev
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8030"]
+    ports:
+      - ${BIND_HOST}:8030:8030
+    depends_on:
+      - redis
+      - web-livereload
+
+  web-livereload:
+    build:
+        context: ./web/
+        dockerfile: Dockerfile
+        args:
+            BUILD_MY_IOT_ENV: dev
+    env_file: .env
+    volumes:
+      - ./web:/app
+    command: ["python", "manage.py", "livereload"]
+    stop_signal: SIGINT  
+
+  bot:
+    build:
+        context: ./web/
+        dockerfile: Dockerfile
+        args:
+            BUILD_MY_IOT_ENV: dev
+    command: ["python", "manage.py", "run_polling"]
+    ports:
+     - ${BIND_HOST}:3000:3000
+    profiles: [chat]
+
