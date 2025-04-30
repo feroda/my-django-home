@@ -1,0 +1,163 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Luca Ferroni</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+            body {
+                background-color: #000;
+                color: #fff;
+                margin: 0px;
+                overflow: hidden;
+            }
+            #info {
+                color: #fff;
+                position: absolute;
+                top: 10px;
+                width: 100%;
+                text-align: center;
+                z-index: 100;
+                font-size: large;
+                display:block;
+            }
+            #info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+		</style>
+	</head>
+
+	<body>
+        <div id="info">Luca Ferroni - towards a new era</div>
+
+        <script src="{% static 'js/three/three.min.js' %}"></script>
+        <script src="{% static 'js/three/OrbitControls.js' %}"></script>
+        <script src="{% static 'js/three/dat.gui.min.js' %}"></script>
+        <script>
+            /* Geometry browser code taken from:
+               https://threejs.org/docs/scenes/geometry-browser.html
+            */
+            var container;
+            var camera, scene, renderer;
+            var group = new THREE.Group();
+            var mouseX = 0, mouseY = 0;
+            var windowHalfX = window.innerWidth / 2;
+            var windowHalfY = window.innerHeight / 2;
+            var data = { shape: 1 };
+
+            init();
+
+            function updateGroupGeometry( mesh, geometry ) {
+
+                if ( geometry.isGeometry ) {
+
+                    geometry = new THREE.BufferGeometry().fromGeometry( geometry );
+
+                    console.warn( 'THREE.GeometryBrowser: Converted Geometry to BufferGeometry.' );
+
+                }
+
+                mesh.children[ 0 ].geometry.dispose();
+                //mesh.children[ 1 ].geometry.dispose();
+
+                //mesh.children[ 0 ].geometry = new THREE.WireframeGeometry( geometry );
+                mesh.children[ 0 ].geometry = geometry;
+
+                // these do not update nicely together if shared
+
+            }
+
+            function init() {
+
+                var shapes = [
+                    new THREE.SphereBufferGeometry(10, 32, 32),
+                    new THREE.TetrahedronBufferGeometry(20),
+                    new THREE.BoxBufferGeometry(20, 20, 20)
+                ];
+                function generateGeometry () {
+                    updateGroupGeometry(group, shapes[data.shape-1]);
+                };
+                //var gui = new dat.GUI();
+                //let f = gui.addFolder('Update me!');
+                //f.add( data, 'shape', 1, 3 ).onChange( generateGeometry );
+
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color( 0x444444 );
+
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 50 );
+                camera.position.z = 30;
+
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                document.body.appendChild( renderer.domElement );
+
+                var orbit = new THREE.OrbitControls( camera, renderer.domElement );
+                orbit.enableZoom = false;
+
+                var lights = [];
+                lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+                lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+                lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+
+                lights[ 0 ].position.set( 0, 200, 0 );
+                lights[ 1 ].position.set( 100, 200, 100 );
+                lights[ 2 ].position.set( - 100, - 200, - 100 );
+
+                scene.add( lights[ 0 ] );
+                scene.add( lights[ 1 ] );
+                scene.add( lights[ 2 ] );
+
+                var geometry = new THREE.BufferGeometry();
+                geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( [], 3 ) );
+
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, opacity: 0.5 } );
+
+                var texture = new THREE.TextureLoader().load( "{% static 'imgs/io.jpg' %}");
+                var meshMaterial = new THREE.MeshPhongMaterial( { color: 0x156289, emissive: 0x072534, side: THREE.DoubleSide, flatShading: true, map: texture } );
+
+                //group.add( new THREE.LineSegments( geometry, lineMaterial ) );
+                group.add( new THREE.Mesh( geometry, meshMaterial) );
+
+                var options = {}; //chooseFromHash( group );
+
+                scene.add( group );
+                updateGroupGeometry(group, shapes[0]);
+
+
+                var render = function () {
+
+                    requestAnimationFrame( render );
+
+                    if ( ! options.fixed ) {
+
+                        group.rotation.x += 0.005;
+                        group.rotation.y += 0.005;
+
+                    }
+
+                    renderer.render( scene, camera );
+
+                };
+
+                window.addEventListener( 'resize', function () {
+
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+
+                    renderer.setSize( window.innerWidth, window.innerHeight );
+
+                }, false );
+
+                render();
+
+                function generateGeometry (i) {
+                    updateGroupGeometry(group, shapes[i]);
+                };
+                var i = 0;
+                setInterval(function () {generateGeometry(i%3); i+=1;}, 3000);
+            }
+
+        </script>
+	</body>
+</html>

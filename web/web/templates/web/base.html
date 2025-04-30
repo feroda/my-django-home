@@ -1,0 +1,241 @@
+{% load static %}
+
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>{% block title %}Luca `fero` Ferroni il mio nome è{% endblock %}</title>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width" />
+
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+                           integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+                           crossorigin="anonymous" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3/dist/vuetify.min.css"></link>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet"></link>
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <script type="importmap"> {# importmap custom for dev and prod #}
+    { "imports": {
+      {% if is_prod %}
+        "vue": "{% static 'js/vue.esm-browser.prod.js' %}",
+      {% else %}
+        "vue": "{% static 'js/vue.esm-browser.js' %}",
+      {% endif %}
+        "vuetify": "{% static 'js/vuetify.esm.js' %}",
+        "vuetify/util/colors": "https://cdn.jsdelivr.net/npm/vuetify@3/lib/util/colors.mjs",
+        "vue-demi": "https://cdn.jsdelivr.net/npm/vue-demi@0.14/lib/v3/index.min.mjs",
+        "@vueuse/shared": "https://cdn.jsdelivr.net/npm/@vueuse/shared@10/index.min.mjs",
+        "@vueuse/core": "https://cdn.jsdelivr.net/npm/@vueuse/core@10/index.min.mjs",
+        "mitt": "{% static 'js/mitt.mjs' %}",
+        "radash": "https://cdn.jsdelivr.net/npm/radash@12.1.0/+esm",
+        "app/http": "{% static 'js/httpMiddleware.js' %}"
+      }
+    }
+    </script>
+    {% block extrahead %}
+    {% endblock %}
+</head>
+
+<body>
+  ciao
+  {% block body %}
+  <div id="app" class="mt-8 mb-4">
+    <v-responsive class="border rounded" max-height="3000">
+      <v-app>
+        <v-app-bar title="https://lucaferroni.it || Luca Ferroni || Luca`fero` Ferroni || Luca `feroda` Fabriano"></v-app-bar>
+
+        {% comment %}
+        # LF: NOT NEEDED NOW
+        <v-navigation-drawer>
+          <v-list>
+            <v-list-item title="Navigation drawer"></v-list-item>
+          </v-list>
+        </v-navigation-drawer>
+        {% endcomment %}
+
+        <v-main>
+          <v-container>
+            {% block main %}
+            {% endblock main %}
+          </v-container>
+        </v-main>
+      </v-app>
+    </v-responsive>
+  </div>
+
+  <script>
+
+    // Disabilita vue/devtools-api in produzione
+    window.IS_PROD = location.hostname !== "localhost";
+    if (window.IS_PROD) {
+      window.__VUE_DEVTOOLS_GLOBAL_HOOK__ = undefined;
+    }
+
+    // Global settings
+    window.settings = {
+      API_BASE_URL: "{{ API_BASE_URL }}",
+      MEDIA_BASE_URL: "{{ MEDIA_BASE_URL }}",
+      DEBOUNCE_DELAY: 1250,
+    };
+    window.dateFormatter = new Intl.DateTimeFormat('it', {
+      weekday:"short",
+      day:"numeric",
+      month:"long", year:"numeric"})
+
+    window.shortMonthFormatter = new Intl.DateTimeFormat('it', {
+      month:"short"})
+
+    window.shortDateFormatter = new Intl.DateTimeFormat('it', {
+      weekday:"short",
+      day:"numeric",
+      month:"short", year:"numeric"})
+
+    window.dateTimeFormatter = new Intl.DateTimeFormat('it', {
+      weekday:"short",
+      day:"numeric",
+      month:"long", year:"numeric",
+      hour:"2-digit", minute:"2-digit"})
+
+    window.dateTimeNoYearFormatter = new Intl.DateTimeFormat('it', {
+      weekday:"short",
+      day:"numeric",
+      month:"long",
+      hour:"2-digit", minute:"2-digit"})
+
+    window.capFirst = function(msg) {
+      return msg.charAt(0).toUpperCase() + msg.slice(1);
+    };
+
+    window.displayDate = function(isoString) {
+      //console.log(`data ${isoString}`);
+      if (isoString && isoString.substring(0, 10) != "1970-01-01") {
+        let rv = window.shortDateFormatter.format(new Date(isoString.substring(0, 10)));
+        return window.capFirst(rv);
+      } else
+        return "--";
+    };
+    window.isDateSet = function(isoString) {
+      return isoString && isoString.substring(0, 10) != "1970-01-01";
+    };
+      
+    window.getCash = function(value) {
+        return parseFloat(value).toLocaleString("it", { minimumFractionDigits: 2})
+    };
+
+    window.timeFormatter = new Intl.DateTimeFormat('it', {
+      hour:"2-digit", minute:"2-digit"})
+
+    window.appBase = {
+      username: "{{user.username}}"
+    }
+  </script>
+  <script type="module" lang="js" defer> // defer can be useful
+    import http from 'app/http';
+    window.http = http;
+
+    import { useStorage, useClipboard, usePermission } from '@vueuse/core';
+
+    window.useStorage = useStorage;
+    window.useClipboard = useClipboard;
+    const permissionRead = usePermission('clipboard-read')
+    const permissionWrite = usePermission('clipboard-write')
+    const clipBoard = useClipboard();
+    window.clipBoard = clipBoard;
+
+    import { debounce, sort } from 'radash';
+    import mitt from 'mitt';
+
+    window.debounce = debounce
+    window.sort = sort
+    window.range = (start, stop, step) =>
+      Array.from(
+        { length: (stop - start) / step + 1 },
+        (value, index) => start + index * step
+      );
+    window.getSector = function (sector) {
+        return window.settings.SECTORS.filter(x => x.value.toUpperCase() === sector.toUpperCase())[0]
+    };
+    window.getProgressStatus = function (statusName) {
+        return window.settings.STATUSES.filter(x => x.value === statusName)[0]
+    };
+    // Global Event Bus (mitt: https://github.com/developit/mitt)
+    window.eventBus = mitt();
+  </script>
+
+  {% block js_module %}
+
+  <script type="module" lang="js">
+    import { createApp } from 'vue'
+    import { createVuetify } from 'vuetify'
+    import colors from 'vuetify/util/colors'
+
+    {% block js_imports %}
+    {% endblock %}
+
+    const noicrmLightTheme = {
+      dark: false,
+      colors: {
+        primary: '#002e6d',
+        secondary: colors.shades.white,
+        colorCAAF: colors.green.darken2,
+        colorINAPA: colors.blue.base,
+        colorANAP: colors.red.darken2,
+        colorADHOC: colors.deepOrange.base,
+        colorPAGHE: colors.amber.base,
+        colorCENPI: colors.lime.darken2,
+        colorSISTEMA: '#002e6d',
+        colorDisabled: colors.grey.lighten3,
+        colorDark: colors.grey.base,
+        colorDarker: colors.grey.darken2,
+        colorStateDated: colors.yellow.darken2,
+        colorGreyTransparent: 'rgba(224, 224, 224, 0.2)', //AAA: ALPHA CHANNEL DOES NOT WOK
+      }
+    }
+    const vuetify = createVuetify({
+    theme: {
+      defaultTheme: 'noicrmLightTheme',
+      themes: {
+          noicrmLightTheme
+      }
+    }
+    })
+
+    {% block vue_app %}
+    const app = createApp({
+      mounted: async function () {
+        window.eventBus.on("appFetchError", this.catchHttpErrors);
+      },
+      beforeUnmount: function () {
+        window.eventBus.off("appFetchError", this.catchHttpErrors);
+      },
+
+      data() {
+        return {
+          active: false,
+          drawer: true,
+          rail: window.useStorage("navigationDrawerIsClosed", false),
+          username: window.appBase.username,
+          currentUser: window.useStorage("currentUser", window.appBase.defaultUser),
+          ctx: window.useStorage("ctx", window.appBase.defaultContext),
+          ctxOptions: window.useStorage("ctxOptions", window.appBase.defaultContextOptions),
+          persona: {},
+          dialog: false,
+          snackbar: false,
+          snackTitle: '',
+          snackText: '',
+          snackTimeout: 4000
+        }
+      }
+    }).use(vuetify)
+    {% endblock vue_app %}
+    app.mount('#app')
+    </script>
+    {% endblock js_module %}
+  {% endblock body %}
+</body>
+</html>

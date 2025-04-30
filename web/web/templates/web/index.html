@@ -1,0 +1,54 @@
+{% extends 'web/base.html' %}
+{% load static i18n %}
+
+{% block main %}
+    <v-row>
+      <v-col>
+        <iframe src="iframes/4d-me/">
+        </iframe>
+      </v-col>
+      <v-col>
+        vuoto
+      </v-col>
+      <v-col>
+        <v-sheet>
+          POST dal sito feroda.org
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <v-card
+        class="mx-auto"
+        subtitle="prepend and append"
+        title="Avatars"
+      >
+        <template v-slot:prepend>
+          <v-avatar color="blue-darken-2">
+            <v-icon icon="mdi-alarm"></v-icon>
+          </v-avatar>
+        </template>
+        <template v-slot:append>
+          <v-avatar size="24">
+            <v-img
+              alt="John"
+              src="https://cdn.vuetifyjs.com/images/john.png"
+            ></v-img>
+          </v-avatar>
+        </template>
+        <v-card-text>... e poi tutta la vita dura un secolo, e sei fortunato</v-card-text>
+    </v-card>
+    <v-row>
+      <v-col>
+        <iframe src="iframes/fortune/">
+        </iframe>
+      </v-col>
+      <v-col>
+        vuoto
+      </v-col>
+      <v-col>
+        <v-sheet>
+          Biglietto da visita
+        </v-sheet>
+      </v-col>
+    </v-row>
+{% endblock main %}
+

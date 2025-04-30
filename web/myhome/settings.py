@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
@@ -54,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'widget_tweaks',
     'captcha',
+    'django.contrib.staticfiles',
 ]
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None  # Needed to close Oauth2 popup
@@ -72,7 +72,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if MY_IOT_ENV == "dev":
+    LIVERELOAD_HOST = "web-livereload"
+    INSTALLED_APPS.insert(INSTALLED_APPS.index('django.contrib.staticfiles')-1, 'livereload')
+    MIDDLEWARE.append('livereload.middleware.LiveReloadScript')
+    PROFILER = False
+    # CORS_ALLOWED_ORIGINS = [ "http://127.0.0.1:3000", "http://localhost:3000"]
+    CORS_ORIGIN_ALLOW_ALL = True
+else:
+    CORS_ORIGIN_ALLOW_ALL = False
+
 ROOT_URLCONF = 'myhome.urls'
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 TEMPLATES = [
     {
@@ -84,6 +95,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myhome.context_processors.export_settings',
             ],
         },
     },
@@ -235,3 +247,11 @@ MEDIA_ROOT = BASE_DIR / 'MEDIA'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}

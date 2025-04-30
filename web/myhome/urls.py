@@ -1,22 +1,28 @@
-"""
-URL configuration for myhome project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
+from django.views.generic.base import TemplateView
+from django.contrib.auth.decorators import login_required
+
+from rest_framework import routers
+
+from web.views.api import ArtistQuoteViewSet, ProjectViewSet
+
+
+router = routers.SimpleRouter()
+router.register(r'api/v1/artistquotes', ArtistQuoteViewSet)
+router.register(r'api/v1/projects', ProjectViewSet)
+
+
+def page_view(template_name):
+    # TODO: decorator for custom headers?
+    return TemplateView.as_view(template_name=template_name, http_method_names=["get"])
+# WAS: return login_required(TemplateView.as_view(template_name=template_name, http_method_names=["get"]))
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', page_view("web/index.html"), name="index"),
+    path('iframes/4d-me/', TemplateView.as_view(template_name="web/4dme.html"), name="4d-me"),
 ]
+
+urlpatterns += router.urls
