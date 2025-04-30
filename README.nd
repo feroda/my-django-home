@@ -1,0 +1,5 @@
+# My Django Home
+
+Porting e miglioramento del precedente https://lucaferroni.it con Django lato server e Vuetify.
+
+Il precedente sito è disponibile come software libero nel repository: https://gitlab.com/feroda/my-home
