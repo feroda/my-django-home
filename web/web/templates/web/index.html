@@ -16,26 +16,8 @@
         </v-sheet>
       </v-col>
     </v-row>
-    <v-card
-        class="mx-auto"
-        subtitle="prepend and append"
-        title="Avatars"
-      >
-        <template v-slot:prepend>
-          <v-avatar color="blue-darken-2">
-            <v-icon icon="mdi-alarm"></v-icon>
-          </v-avatar>
-        </template>
-        <template v-slot:append>
-          <v-avatar size="24">
-            <v-img
-              alt="John"
-              src="https://cdn.vuetifyjs.com/images/john.png"
-            ></v-img>
-          </v-avatar>
-        </template>
-        <v-card-text>... e poi tutta la vita dura un secolo, e sei fortunato</v-card-text>
-    </v-card>
+    <lf-artist-quotes>i
+    </lf-artist-quotes>
     <v-row>
       <v-col>
         <iframe src="iframes/fortune/">
@@ -52,3 +34,11 @@
     </v-row>
 {% endblock main %}
 
+{% block js_imports %}
+  import LfArtistQuotes from 'app/lf-artist-quotes';
+{% endblock %}
+
+{% block vue_app %}
+  {{ block.super }}
+  app.component('LfArtistQuotes', LfArtistQuotes);
+{% endblock vue_app %}

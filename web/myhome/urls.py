@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
 from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from rest_framework import routers
 
@@ -26,3 +28,6 @@ urlpatterns = [
 ]
 
 urlpatterns += router.urls
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
