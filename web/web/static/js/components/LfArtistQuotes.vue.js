@@ -34,8 +34,12 @@ export default {
     }
   },
   template: /*html*/`
+  <div
+    class="item-group d-flex ga-3 ma-4"
+    xyz="fade origin-top-left perspective-2 left-5 stagger-3"
+  >
     <v-card
-        class="mx-auto"
+        class="mx-auto w-25"
         :subtitle="aq.artist"
         :title="aq.title"
         v-for="aq in artistquotes"
@@ -58,6 +62,6 @@ export default {
         </template>
         <v-card-text class="font-italic">{{ aq.body }}</v-card-text>
     </v-card>
-
+  </div>
   `
 };
